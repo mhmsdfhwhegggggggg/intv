@@ -114,6 +114,8 @@ def init_db():
 
         # Default settings
         conn.execute("INSERT OR IGNORE INTO site_settings (key, value) VALUES ('telegram_url', 'https://T.me/PU_M_P_O')")
+        conn.execute("INSERT OR IGNORE INTO site_settings (key, value) VALUES ('support_email', 'support@investcorp-capital.com')")
+        conn.execute("INSERT OR IGNORE INTO site_settings (key, value) VALUES ('support_phone', '+966 50 000 0000')")
 
         # Create default admin if not exists
         from app.auth import hash_password

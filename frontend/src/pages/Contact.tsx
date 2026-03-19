@@ -1,12 +1,24 @@
-import { useState } from 'react';
-import { Phone, Mail, MapPin, Send, CheckCircle2, MessageSquare, Globe, ArrowUpRight, Shield, Zap } from 'lucide-react';
-import { submitContact } from '../lib/api';
+import { useState, useEffect } from 'react';
+import { Phone, Mail, MapPin, Send, CheckCircle2, MessageSquare, Shield, Zap } from 'lucide-react';
+import { submitContact, api } from '../lib/api';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' });
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  const [supportEmail, setSupportEmail] = useState('support@investcorp-capital.com');
+  const [supportPhone, setSupportPhone] = useState('+966 50 000 0000');
+
+  useEffect(() => {
+    Promise.all([
+      api.get('/api/settings/support_email'),
+      api.get('/api/settings/support_phone')
+    ]).then(([emailRes, phoneRes]) => {
+      setSupportEmail(emailRes.data.value);
+      setSupportPhone(phoneRes.data.value);
+    }).catch(() => {});
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -48,10 +60,10 @@ export default function Contact() {
                <div className="absolute top-0 right-0 w-32 h-32 bg-green-500/10 blur-[60px] rounded-full -translate-y-1/2 translate-x-1/2" />
                <h2 className="text-2xl font-black text-white mb-10 relative z-10">قنوات التواصل</h2>
                
-               <div className="space-y-8 relative z-10">
+               <div className="space-y-8 relative z-10 text-right">
                  {[
-                   { icon: Phone, label: 'الخط الساخن', value: '+971 50 123 4567', color: 'text-green-400' },
-                   { icon: Mail, label: 'الدعم الفني', value: 'contact@investcorp.capital', color: 'text-blue-400' },
+                   { icon: Phone, label: 'الخط الساخن', value: supportPhone, color: 'text-green-400' },
+                   { icon: Mail, label: 'الدعم الفني', value: supportEmail, color: 'text-blue-400' },
                    { icon: MapPin, label: 'المقر الرئيسي', value: 'مركز دبي المالي العالمي، الإمارات', color: 'text-amber-400' },
                  ].map((item, i) => (
                    <div key={i} className="flex items-start gap-6 group/item">

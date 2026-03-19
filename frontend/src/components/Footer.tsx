@@ -1,14 +1,22 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { TrendingUp, Mail, Instagram, Twitter, Linkedin, ShieldCheck, Globe, Send } from 'lucide-react';
+import { TrendingUp, Mail, Instagram, Twitter, Linkedin, ShieldCheck, Globe, Send, Phone } from 'lucide-react';
 import { api } from '../lib/api';
 
 export default function Footer() {
   const [telegramUrl, setTelegramUrl] = useState('');
+  const [supportEmail, setSupportEmail] = useState('support@investcorp-capital.com');
+  const [supportPhone, setSupportPhone] = useState('+966 50 000 0000');
 
   useEffect(() => {
-    api.get('/api/settings/telegram_url').then(res => {
-      setTelegramUrl(res.data.value);
+    Promise.all([
+      api.get('/api/settings/telegram_url'),
+      api.get('/api/settings/support_email'),
+      api.get('/api/settings/support_phone')
+    ]).then(([tgRes, emailRes, phoneRes]) => {
+      setTelegramUrl(tgRes.data.value);
+      setSupportEmail(emailRes.data.value);
+      setSupportPhone(phoneRes.data.value);
     }).catch(() => {});
   }, []);
   return (
@@ -93,31 +101,37 @@ export default function Footer() {
                 <span className="w-1.5 h-6 bg-blue-500 rounded-full" />
                 تواصل مباشر
               </h3>
-              <div className="space-y-6">
-                <a 
-                  href={telegramUrl || "#"} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="flex gap-4 bg-white/[0.02] border border-white/[0.05] p-4 rounded-2xl hover:bg-white/[0.05] transition-all group"
-                >
-                  <div className="w-10 h-10 rounded-xl glass flex items-center justify-center text-[#0088cc] group-hover:scale-110 transition-transform">
-                    <Send className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <span className="text-xs text-gray-500 block mb-1">تواصل عبر تليجرام</span>
-                    <span className="text-white font-bold text-sm">الدعم الفني المباشر</span>
-                  </div>
-                </a>
-                <div className="flex gap-4">
-                  <div className="w-10 h-10 rounded-xl glass flex items-center justify-center text-blue-400">
+              <ul className="space-y-4">
+                <li className="flex items-center gap-3 text-gray-400 group">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-green-500/10 group-hover:text-green-500 transition-all">
                     <Mail className="w-5 h-5" />
                   </div>
-                  <div>
-                    <span className="text-xs text-gray-500 block mb-1">البريد الإلكتروني</span>
-                    <span className="text-white font-bold text-sm">support@investcorp.cc</span>
+                  <span className="font-bold">{supportEmail}</span>
+                </li>
+                <li className="flex items-center gap-3 text-gray-400 group">
+                  <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center group-hover:bg-blue-500/10 group-hover:text-blue-500 transition-all">
+                    <Phone className="w-5 h-5" />
                   </div>
-                </div>
-              </div>
+                  <span className="font-bold">{supportPhone}</span>
+                </li>
+              </ul>
+            </div>
+
+            {/* Newsletter */}
+            <div>
+              <h4 className="text-white font-black text-lg mb-8">التواصل السريع</h4>
+              <p className="text-gray-500 text-sm mb-6 leading-relaxed">
+                تواصل معنا عبر تليجرام للحصول على رد فوري واستشارات مالية مباشرة.
+              </p>
+              <a 
+                href={telegramUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="premium-btn premium-btn-primary w-full py-4 flex items-center justify-center gap-3 group"
+              >
+                <Send className="w-5 h-5" />
+                <span>قناتنا على تليجرام</span>
+              </a>
             </div>
           </div>
         </div>

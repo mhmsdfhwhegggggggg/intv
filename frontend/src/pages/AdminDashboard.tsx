@@ -64,6 +64,8 @@ export default function AdminDashboard() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [subscriptions, setSubscriptions] = useState<any[]>([]);
   const [telegramUrl, setTelegramUrl] = useState('');
+  const [supportEmail, setSupportEmail] = useState('');
+  const [supportPhone, setSupportPhone] = useState('');
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
@@ -90,9 +92,12 @@ export default function AdminDashboard() {
   const loadData = useCallback(async () => {
     try {
       setLoading(true);
-      const [statsRes, clientsRes, profitsRes, messagesRes, subsRes, telRes] = await Promise.all([
+      const [statsRes, clientsRes, profitsRes, messagesRes, subsRes, telRes, emailRes, phoneRes] = await Promise.all([
         getStats(), getClients(), getProfits(), getMessages(),
-        api.get('/api/admin/subscriptions'), api.get('/api/settings/telegram_url')
+        api.get('/api/admin/subscriptions'), 
+        api.get('/api/settings/telegram_url'),
+        api.get('/api/settings/support_email'),
+        api.get('/api/settings/support_phone')
       ]);
       setStats(statsRes.data);
       setClients(clientsRes.data);
@@ -100,6 +105,8 @@ export default function AdminDashboard() {
       setMessages(messagesRes.data);
       setSubscriptions(subsRes.data);
       setTelegramUrl(telRes.data.value || '');
+      setSupportEmail(emailRes.data.value || '');
+      setSupportPhone(phoneRes.data.value || '');
     } catch {
       navigate('/admin-login');
     } finally {
@@ -129,6 +136,20 @@ export default function AdminDashboard() {
       await api.put('/api/admin/settings/telegram_url', { value: telegramUrl });
       alert('تم تحديث رابط تليجرام بنجاح');
     } catch { alert('خطأ في تحديث الإعدادات'); }
+  };
+
+  const handleUpdateEmail = async () => {
+    try {
+      await api.put('/api/admin/settings/support_email', { value: supportEmail });
+      alert('تم تحديث البريد الإلكتروني بنجاح');
+    } catch { alert('خطأ في التحديث'); }
+  };
+
+  const handleUpdatePhone = async () => {
+    try {
+      await api.put('/api/admin/settings/support_phone', { value: supportPhone });
+      alert('تم تحديث رقم الهاتف بنجاح');
+    } catch { alert('خطأ في التحديث'); }
   };
 
   const handleLogout = () => {
@@ -630,8 +651,35 @@ export default function AdminDashboard() {
                  <div className="absolute top-0 right-0 w-64 h-64 bg-green-500/5 blur-[120px] rounded-full" />
                  <h3 className="text-white font-black text-2xl mb-8 flex items-center gap-3"><Zap className="text-green-500" /> إعدادات الموقع</h3>
                  
-                 <div className="space-y-6 relative z-10">
-                    <div>
+                 <div className="space-y-8 relative z-10">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-right">
+                       <div className="space-y-2">
+                          <label className="text-gray-500 text-[10px] font-black uppercase tracking-widest px-2">البريد الإلكتروني للدعم</label>
+                          <div className="flex gap-4">
+                             <input 
+                               type="text" 
+                               value={supportEmail} 
+                               onChange={e => setSupportEmail(e.target.value)}
+                               className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-green-500/50 text-left font-mono" 
+                             />
+                             <button onClick={handleUpdateEmail} className="bg-blue-500 hover:bg-blue-600 text-white font-black px-6 py-4 rounded-2xl transition-all shadow-lg shadow-blue-500/20">حفظ</button>
+                          </div>
+                       </div>
+                       <div className="space-y-2">
+                          <label className="text-gray-500 text-[10px] font-black uppercase tracking-widest px-2">رقم الهاتف / واتساب</label>
+                          <div className="flex gap-4">
+                             <input 
+                               type="text" 
+                               value={supportPhone} 
+                               onChange={e => setSupportPhone(e.target.value)}
+                               className="flex-1 bg-white/5 border border-white/10 rounded-2xl px-6 py-4 text-white focus:outline-none focus:border-green-500/50 text-left font-mono" 
+                             />
+                             <button onClick={handleUpdatePhone} className="bg-amber-500 hover:bg-amber-600 text-white font-black px-6 py-4 rounded-2xl transition-all shadow-lg shadow-amber-500/20">حفظ</button>
+                          </div>
+                       </div>
+                    </div>
+
+                    <div className="space-y-2">
                        <label className="text-gray-500 text-[10px] font-black uppercase tracking-widest px-2">رابط تليجرام الموحد</label>
                        <div className="flex gap-4">
                           <input 
