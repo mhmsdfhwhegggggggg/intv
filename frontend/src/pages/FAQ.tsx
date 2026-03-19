@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ChevronDown, ArrowUpRight } from 'lucide-react';
+import { ChevronDown, ArrowUpRight, HelpCircle, MessageCircle } from 'lucide-react';
 
 const faqs = [
   { q: 'ما هي INVESTCORP CAPITAL؟', a: 'INVESTCORP CAPITAL هي شركة استثمارية خليجية رائدة متخصصة في إدارة المحافظ الاستثمارية في أسواق الأسهم الخليجية. تأسست عام 2017 وتقدم باقات استثمارية مضمونة بعوائد يومية.' },
@@ -20,42 +20,82 @@ export default function FAQ() {
 
   return (
     <div className="min-h-screen" dir="rtl">
-      <section className="gradient-bg pt-24 pb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-black text-white mb-4">الأسئلة الشائعة</h1>
-          <p className="text-gray-400 text-lg max-w-2xl mx-auto">إجابات على أكثر الأسئلة شيوعاً حول خدماتنا الاستثمارية</p>
-          <div className="w-20 h-1 bg-green-500 mx-auto rounded-full mt-6"></div>
+      {/* Hero */}
+      <section className="gradient-bg pt-32 pb-20 relative overflow-hidden">
+        <div className="absolute inset-0">
+          <div className="absolute top-20 right-10 w-[400px] h-[400px] bg-green-500/5 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 left-20 w-[500px] h-[500px] bg-blue-500/5 rounded-full blur-3xl"></div>
+        </div>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative">
+          <span className="inline-flex items-center gap-2 px-5 py-2 bg-green-600/10 border border-green-500/20 rounded-full text-green-400 text-sm mb-6">
+            <HelpCircle className="w-4 h-4" />
+            <span className="font-medium">إجابات شاملة</span>
+          </span>
+          <h1 className="text-4xl md:text-6xl font-black text-white mb-5">
+            الأسئلة <span className="text-gradient">الشائعة</span>
+          </h1>
+          <p className="text-gray-400 text-lg md:text-xl max-w-3xl mx-auto leading-relaxed">
+            إجابات على أكثر الأسئلة شيوعاً حول خدماتنا الاستثمارية وكيفية البدء معنا
+          </p>
         </div>
       </section>
 
-      <section className="py-20 bg-slate-900">
+      {/* FAQ List */}
+      <section className="py-24 bg-slate-900">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="space-y-3">
+          <div className="space-y-4">
             {faqs.map((faq, i) => (
-              <div key={i} className="glass rounded-xl overflow-hidden">
+              <div
+                key={i}
+                className={`glass rounded-2xl overflow-hidden transition-all duration-300 ${
+                  openIndex === i ? 'border-green-500/20' : ''
+                }`}
+              >
                 <button
                   onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  className="w-full flex items-center justify-between p-5 text-right"
+                  className="w-full flex items-center justify-between p-6 text-right group"
                 >
-                  <span className="text-white font-bold text-sm md:text-base">{faq.q}</span>
-                  <ChevronDown className={`w-5 h-5 text-green-400 shrink-0 transition-transform ${openIndex === i ? 'rotate-180' : ''}`} />
-                </button>
-                {openIndex === i && (
-                  <div className="px-5 pb-5 border-t border-white/10 pt-3">
-                    <p className="text-gray-400 text-sm leading-relaxed">{faq.a}</p>
+                  <div className="flex items-center gap-4">
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
+                      openIndex === i ? 'bg-green-600/20' : 'bg-white/5'
+                    }`}>
+                      <span className={`text-xs font-black ${openIndex === i ? 'text-green-400' : 'text-gray-500'}`}>
+                        {String(i + 1).padStart(2, '0')}
+                      </span>
+                    </div>
+                    <span className="text-white font-bold text-sm md:text-base">{faq.q}</span>
                   </div>
-                )}
+                  <ChevronDown className={`w-5 h-5 text-green-400 shrink-0 transition-transform duration-300 mr-4 ${openIndex === i ? 'rotate-180' : ''}`} />
+                </button>
+                <div className={`overflow-hidden transition-all duration-300 ${
+                  openIndex === i ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                }`}>
+                  <div className="px-6 pb-6 pr-[4.5rem]">
+                    <div className="border-t border-white/5 pt-4">
+                      <p className="text-gray-400 text-sm leading-relaxed">{faq.a}</p>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="py-16 gradient-bg">
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-black text-white mb-4">لم تجد إجابة سؤالك؟</h2>
-          <p className="text-gray-400 mb-8">تواصل معنا وسيقوم فريقنا بالرد على جميع استفساراتك</p>
-          <Link to="/contact" className="inline-flex items-center gap-2 px-8 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-bold text-lg transition-all shadow-lg shadow-green-600/30">
+      {/* CTA */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute inset-0 gradient-bg"></div>
+        <div className="absolute inset-0">
+          <div className="absolute top-10 left-1/4 w-80 h-80 bg-green-500/10 rounded-full blur-3xl"></div>
+          <div className="absolute bottom-10 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
+        </div>
+        <div className="max-w-4xl mx-auto px-4 text-center relative">
+          <div className="w-20 h-20 bg-green-600/15 rounded-3xl flex items-center justify-center mx-auto mb-8">
+            <MessageCircle className="w-10 h-10 text-green-400" />
+          </div>
+          <h2 className="text-3xl md:text-5xl font-black text-white mb-5">لم تجد إجابة سؤالك؟</h2>
+          <p className="text-gray-400 text-lg md:text-xl mb-10 max-w-2xl mx-auto">تواصل معنا وسيقوم فريقنا بالرد على جميع استفساراتك بسرعة واحترافية</p>
+          <Link to="/contact" className="inline-flex items-center gap-3 px-10 py-4 bg-gradient-to-l from-green-600 to-green-500 hover:from-green-500 hover:to-green-400 text-white rounded-2xl font-bold text-lg transition-all duration-300 shadow-xl shadow-green-600/30 hover:shadow-green-500/40 hover:scale-[1.02]">
             <ArrowUpRight className="w-5 h-5" />
             تواصل معنا
           </Link>
