@@ -44,7 +44,7 @@ export default function AdminLogin() {
 
         <div className="glass rounded-2xl p-8 md:p-10">
           <div className="text-center mb-8">
-            <div className="w-18 h-18 w-[72px] h-[72px] bg-amber-600/15 rounded-2xl flex items-center justify-center mx-auto mb-5">
+            <div className="w-[72px] h-[72px] bg-amber-600/15 rounded-2xl flex items-center justify-center mx-auto mb-5">
               <Shield className="w-9 h-9 text-amber-400" />
             </div>
             <h1 className="text-2xl font-black text-white">لوحة تحكم الإدارة</h1>
