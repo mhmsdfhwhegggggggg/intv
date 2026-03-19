@@ -89,11 +89,11 @@ export default function Navbar() {
 
       {/* Mobile Nav */}
       <div 
-        className={`lg:hidden fixed inset-x-4 top-20 transition-all duration-500 transform ${
+        className={`lg:hidden fixed inset-x-4 top-24 transition-all duration-500 transform z-[60] ${
           isOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0 pointer-events-none'
         }`}
       >
-        <div className="bg-slate-900/98 border border-white/10 backdrop-blur-2xl rounded-3xl p-6 shadow-2xl shadow-black/50 space-y-2 overflow-hidden" dir="rtl">
+        <div className="bg-[#0f172a] border border-white/10 rounded-3xl p-6 shadow-[0_20px_50px_rgba(0,0,0,0.5)] space-y-2 overflow-hidden" dir="rtl">
           {navLinks.map((link) => (
             <Link
               key={link.path}

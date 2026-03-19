@@ -140,8 +140,8 @@ export default function Trading() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
           
           {/* Asset Sidebar */}
-          <div className="lg:col-span-3 space-y-4 h-full overflow-hidden flex flex-col animate-slide-right">
-             <div className="glass rounded-[2.5rem] border-white/5 p-6 flex-1 overflow-hidden flex flex-col">
+          <div className="lg:col-span-3 space-y-4 h-[400px] lg:h-full overflow-hidden flex flex-col animate-slide-right order-2 lg:order-1">
+             <div className="bg-slate-900 border border-white/10 rounded-[2.5rem] p-6 flex-1 overflow-hidden flex flex-col shadow-2xl">
                 <div className="flex items-center justify-between mb-6">
                    <h2 className="text-white font-black text-xl flex items-center gap-2">
                       <TrendingUp className="w-5 h-5 text-green-400" />

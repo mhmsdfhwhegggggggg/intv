@@ -95,7 +95,7 @@ export default function Home() {
   return (
     <div className="min-h-screen selection:bg-green-500/30" dir="rtl">
       {/* Hero Section */}
-      <section className="relative pt-32 pb-20 overflow-hidden bg-mesh">
+      <section className="relative pt-40 lg:pt-32 pb-20 overflow-hidden bg-mesh">
         <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
           <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-green-500/10 blur-[120px] rounded-full animate-pulse" />
           <div className="absolute top-[20%] -right-[5%] w-[30%] h-[30%] bg-blue-500/10 blur-[100px] rounded-full" />
@@ -145,7 +145,7 @@ export default function Home() {
               </div>
             </div>
 
-            <div className="flex-1 w-full lg:max-w-xl animate-fade-in delay-300">
+            <div className="flex-1 w-full lg:max-w-xl animate-fade-in delay-300 mt-12 lg:mt-0">
                {/* Market Live Grid */}
                 <div className="grid grid-cols-2 gap-4">
                   {markets.map((market, i) => (
@@ -218,7 +218,6 @@ export default function Home() {
                 <ArrowUpRight className="w-5 h-5" />
               </Link>
             </div>
-
             <div className="lg:w-2/3 w-full grid grid-cols-1 md:grid-cols-2 gap-6 h-[400px]">
               <div className="glass rounded-[2rem] p-6 flex flex-col">
                 <div className="flex items-center justify-between mb-6">
