@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { TrendingUp, BarChart, PieChart, Activity, Globe, ArrowUpRight, ArrowDownRight, Zap, Target, Search, Calendar, ChevronLeft } from 'lucide-react';
 
 const markets = [
