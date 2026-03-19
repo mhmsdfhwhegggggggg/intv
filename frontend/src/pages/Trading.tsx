@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   TrendingUp, TrendingDown, Clock, Globe, ArrowUpRight, 
   BarChart3, Wallet, Shield, Zap, RefreshCw, 
@@ -21,13 +21,23 @@ const INITIAL_ASSETS: Asset[] = [
   { id: '1', name: 'بيتكوين', symbol: 'BTC/USDT', price: 65432.10, change: 2.45, type: 'crypto', icon: Bitcoin, color: '#F7931A' },
   { id: '2', name: 'إيثيريوم', symbol: 'ETH/USDT', price: 3456.78, change: -1.20, type: 'crypto', icon: Coins, color: '#627EEA' },
   { id: '3', name: 'سولانا', symbol: 'SOL/USDT', price: 145.20, change: 5.67, type: 'crypto', icon: Flame, color: '#14F195' },
-  { id: '4', name: 'الذهب', symbol: 'XAU/USD', price: 2345.60, change: 0.85, type: 'commodity', icon: Landmark, color: '#FFD700' },
-  { id: '5', name: 'النفط الخام', symbol: 'BRENT', price: 82.45, change: -0.45, type: 'commodity', icon: Flame, color: '#313339' },
-  { id: '6', name: 'الدولار/الريال', symbol: 'USD/SAR', price: 3.75, change: 0.00, type: 'forex', icon: CircleDollarSign, color: '#006C35' },
-  { id: '7', name: 'اليورو/الدولار', symbol: 'EUR/USD', price: 1.0845, change: 0.12, type: 'forex', icon: Globe, color: '#003399' },
-  { id: '8', name: 'الجنيه الإسترليني', symbol: 'GBP/USD', price: 1.2678, change: -0.05, type: 'forex', icon: Globe, color: '#CF142B' },
-  { id: '9', name: 'بينانس كوين', symbol: 'BNB/USDT', price: 580.45, change: 1.23, type: 'crypto', icon: Coins, color: '#F3BA2F' },
-  { id: '10', name: 'ريبل', symbol: 'XRP/USDT', price: 0.62, change: -2.34, type: 'crypto', icon: Coins, color: '#23292F' },
+  { id: '4', name: 'بينانس كوين', symbol: 'BNB/USDT', price: 580.45, change: 1.23, type: 'crypto', icon: Coins, color: '#F3BA2F' },
+  { id: '5', name: 'ريبل', symbol: 'XRP/USDT', price: 0.62, change: -2.34, type: 'crypto', icon: Coins, color: '#23292F' },
+  { id: '6', name: 'كاردانو', symbol: 'ADA/USDT', price: 0.45, change: 1.15, type: 'crypto', icon: Coins, color: '#0033AD' },
+  { id: '7', name: 'دوجكوين', symbol: 'DOGE/USDT', price: 0.16, change: 4.20, type: 'crypto', icon: Coins, color: '#C2A633' },
+  { id: '8', name: 'بولكادوت', symbol: 'DOT/USDT', price: 7.20, change: -0.85, type: 'crypto', icon: Coins, color: '#E6007A' },
+  { id: '9', name: 'بوليجون', symbol: 'MATIC/USDT', price: 0.72, change: 2.10, type: 'crypto', icon: Coins, color: '#8247E5' },
+  { id: '10', name: 'تشينلينك', symbol: 'LINK/USDT', price: 18.45, change: -1.45, type: 'crypto', icon: Coins, color: '#2A5ADA' },
+  { id: '11', name: 'الذهب', symbol: 'XAU/USD', price: 2345.60, change: 0.85, type: 'commodity', icon: Landmark, color: '#FFD700' },
+  { id: '12', name: 'الفضة', symbol: 'XAG/USD', price: 28.45, change: 1.20, type: 'commodity', icon: Landmark, color: '#C0C0C0' },
+  { id: '13', name: 'النفط الخام', symbol: 'BRENT', price: 82.45, change: -0.45, type: 'commodity', icon: Flame, color: '#313339' },
+  { id: '14', name: 'الغاز الطبيعي', symbol: 'NATGAS', price: 1.85, change: -3.20, type: 'commodity', icon: Flame, color: '#4FB0FF' },
+  { id: '15', name: 'الدولار/الريال', symbol: 'USD/SAR', price: 3.75, change: 0.00, type: 'forex', icon: CircleDollarSign, color: '#006C35' },
+  { id: '16', name: 'اليورو/الدولار', symbol: 'EUR/USD', price: 1.0845, change: 0.12, type: 'forex', icon: Globe, color: '#003399' },
+  { id: '17', name: 'الجنيه الإسترليني', symbol: 'GBP/USD', price: 1.2678, change: -0.05, type: 'forex', icon: Globe, color: '#CF142B' },
+  { id: '18', name: 'الدولار/الين', symbol: 'USD/JPY', price: 151.45, change: 0.45, type: 'forex', icon: Globe, color: '#BC002D' },
+  { id: '19', name: 'الدولار الأسترالي', symbol: 'AUD/USD', price: 0.6545, change: -0.25, type: 'forex', icon: Globe, color: '#00008B' },
+  { id: '20', name: 'الدولار الكندي', symbol: 'USD/CAD', price: 1.3567, change: 0.15, type: 'forex', icon: Globe, color: '#FF0000' },
 ];
 
 export default function Trading() {
@@ -56,7 +66,8 @@ export default function Trading() {
     const interval = setInterval(async () => {
       // 1. Update Crypto from Binance (Mockable if needed, but let's try real fetch for 2 major ones)
       try {
-        const symbols = ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', 'BNBUSDT', 'XRPUSDT'];
+        const cryptos = assets.filter(a => a.type === 'crypto');
+        const symbols = cryptos.map(a => a.symbol.replace('/', ''));
         const responses = await Promise.all(symbols.map(s => 
           fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}`)
         ));

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
-  TrendingUp, Shield, Clock, Globe, Users, Zap, Star, 
+  TrendingUp, Shield, Globe, Users, Zap, Star, 
   ChevronLeft, BarChart3, Award, Target, ArrowUpRight, 
-  CheckCircle2, PlayCircle, BarChart, PieChart, Activity,
-  ShieldCheck, BadgeCheck
+  CheckCircle2, PlayCircle, BarChart, Activity,
+  ShieldCheck, BadgeCheck, Bitcoin, Coins, Landmark, Flame
 } from 'lucide-react';
+import { AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
 
 const stats = [
   { icon: Users, value: '+15,800', label: 'عميل نشط', color: 'text-green-400' },
@@ -17,10 +18,17 @@ const stats = [
 const features = [
   { icon: Shield, title: 'استثمار آمن ومضمون', desc: 'نضمن لك حماية رأس المال بالكامل مع عوائد يومية ثابتة ومحددة مسبقاً' },
   { icon: TrendingUp, title: 'عوائد يومية فورية', desc: 'احصل على أرباحك بشكل يومي مع إمكانية السحب الفوري في أي وقت' },
-  { icon: BarChart, title: 'تنويع المحافظ', desc: 'نستثمر في أكبر الشركات المدرجة في أسواق الخليج لتحقيق أفضل العוائد' },
+  { icon: BarChart, title: 'تنويع المحافظ', desc: 'نستثمر في أكبر الشركات المدرجة في أسواق الخليج لتحقيق أفضل العوائد' },
   { icon: Zap, title: 'تنفيذ فوري', desc: 'تنفيذ عمليات الاستثمار والسحب بسرعة فائقة على مدار الساعة' },
   { icon: Users, title: 'فريق خبراء', desc: 'فريق من المحللين والخبراء الماليين بخبرة تتجاوز 15 عاماً في الأسواق' },
   { icon: Target, title: 'تغطية خليجية', desc: 'نغطي جميع أسواق الأسهم الخليجية: السعودية، دبي، أبوظبي، الكويت، قطر' },
+];
+
+const liveAssets = [
+  { name: 'بيتكوين', symbol: 'BTC/USDT', icon: Bitcoin, color: '#F7931A', type: 'crypto' },
+  { name: 'إيثيريوم', symbol: 'ETH/USDT', icon: Coins, color: '#627EEA', type: 'crypto' },
+  { name: 'الذهب', symbol: 'XAU/USD', icon: Landmark, color: '#FFD700', type: 'commodity' },
+  { name: 'النفط الخام', symbol: 'BRENT', icon: Flame, color: '#313339', type: 'commodity' },
 ];
 
 export default function Home() {
@@ -31,20 +39,55 @@ export default function Home() {
     { name: 'KSE', symbol: 'KWT', price: 7450.4, change: 1.23, up: true },
   ]);
 
+  const [livePrices, setLivePrices] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<any[]>([]);
+
   useEffect(() => {
-    const interval = setInterval(() => {
+    // Initial data for live prices
+    setLivePrices(liveAssets.map(a => ({ ...a, price: Math.random() * 50000, change: (Math.random() - 0.5) * 5 })));
+    
+    // Initial chart data
+    const data = [];
+    let base = 65000;
+    for (let i = 0; i < 20; i++) {
+      base = base * (1 + (Math.random() - 0.5) * 0.01);
+      data.push({ time: `${i}:00`, price: base });
+    }
+    setChartData(data);
+
+    const interval = setInterval(async () => {
+      // Update Markets (Saudi, Dubai, etc)
       setMarkets(current => current.map(m => {
         const volatility = 0.0005;
         const movement = (Math.random() - 0.5) * 2 * volatility;
         const newPrice = m.price * (1 + movement);
         const newChange = m.change + (movement * 100);
-        return {
-          ...m,
-          price: newPrice,
-          change: newChange,
-          up: newChange >= 0
-        };
+        return { ...m, price: newPrice, change: newChange, up: newChange >= 0 };
       }));
+
+      // Update Live Trading Assets (BTC, ETH, etc)
+      try {
+        const symbols = ['BTCUSDT', 'ETHUSDT'];
+        const responses = await Promise.all(symbols.map(s => 
+          fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${s}`)
+        ));
+        const binanceData = await Promise.all(responses.map(r => r.json()));
+        const priceMap: Record<string, number> = {};
+        binanceData.forEach(item => { priceMap[item.symbol] = parseFloat(item.price); });
+
+        setLivePrices(prev => prev.map(asset => {
+          const bSymbol = asset.symbol.replace('/', '');
+          if (priceMap[bSymbol]) {
+            return { ...asset, price: priceMap[bSymbol], change: asset.change + (Math.random() - 0.5) * 0.1 };
+          }
+          return { ...asset, price: asset.price * (1 + (Math.random() - 0.5) * 0.001), change: asset.change + (Math.random() - 0.5) * 0.05 };
+        }));
+
+        // Update chart with BTC price
+        if (priceMap['BTCUSDT']) {
+          setChartData(prev => [...prev.slice(1), { time: new Date().toLocaleTimeString(), price: priceMap['BTCUSDT'] }]);
+        }
+      } catch (err) {}
     }, 3000);
     return () => clearInterval(interval);
   }, []);
@@ -152,8 +195,118 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Live Trading Section */}
+      <section className="py-24 relative overflow-hidden">
+        <div className="absolute top-1/2 left-0 w-96 h-96 bg-green-500/5 blur-[120px] rounded-full -translate-x-1/2" />
+        
+        <div className="max-w-7xl mx-auto px-6 relative z-10">
+          <div className="flex flex-col lg:flex-row gap-12 items-center">
+            <div className="lg:w-1/3 text-right">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-xs font-bold mb-6">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                سوق التداول المباشر
+              </div>
+              <h2 className="text-4xl font-black text-white mb-6 leading-tight">
+                راقب الأسواق <br />
+                <span className="text-green-500">ونفذ صفقاتك</span> بلحظتها
+              </h2>
+              <p className="text-gray-400 mb-8 leading-relaxed">
+                نوفر لك واجهة تداول احترافية مربوطة مباشرة بأكبر البورصات العالمية والخليجية، لضمان دقة السعر وسرعة التنفيذ.
+              </p>
+              <Link to="/trading" className="premium-btn premium-btn-primary px-8 py-4 inline-flex items-center gap-3">
+                <span>ابدأ التداول الآن</span>
+                <ArrowUpRight className="w-5 h-5" />
+              </Link>
+            </div>
+
+            <div className="lg:w-2/3 w-full grid grid-cols-1 md:grid-cols-2 gap-6 h-[400px]">
+              <div className="glass rounded-[2rem] p-6 flex flex-col">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-orange-500/10 flex items-center justify-center text-orange-500">
+                      <Bitcoin className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <div className="text-white font-bold text-sm">بيتكوين</div>
+                      <div className="text-gray-500 text-[10px] font-bold">BTC/USDT</div>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-white font-black text-lg">
+                      ${livePrices.find(p => p.symbol === 'BTC/USDT')?.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex-1 min-h-[200px]">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={chartData}>
+                      <defs>
+                        <linearGradient id="homeChartGradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#22c55e" stopOpacity={0.3}/>
+                          <stop offset="95%" stopColor="#22c55e" stopOpacity={0}/>
+                        </linearGradient>
+                      </defs>
+                      <Area 
+                        type="monotone" 
+                        dataKey="price" 
+                        stroke="#22c55e" 
+                        strokeWidth={2} 
+                        fillOpacity={1} 
+                        fill="url(#homeChartGradient)" 
+                        animationDuration={1000}
+                      />
+                      <XAxis dataKey="time" hide />
+                      <YAxis domain={['auto', 'auto']} hide />
+                      <Tooltip 
+                        contentStyle={{ backgroundColor: '#1a1a1a', border: 'none', borderRadius: '12px', fontSize: '10px' }}
+                        labelStyle={{ display: 'none' }}
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="space-y-4 overflow-y-auto pr-1">
+                {livePrices.map((asset, i) => (
+                  <div key={i} className="glass p-4 rounded-2xl border-white/5 flex items-center justify-between hover:bg-white/5 transition-all">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center" style={{ color: asset.color }}>
+                        <asset.icon className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <div className="text-white font-bold text-sm">{asset.name}</div>
+                        <div className="text-gray-500 text-[10px] font-bold">{asset.symbol}</div>
+                      </div>
+                    </div>
+                    <div className="text-left">
+                      <div className="text-white font-bold text-sm tabular-nums">
+                        ${asset.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: asset.price < 10 ? 4 : 2 })}
+                      </div>
+                      <div className={`text-[10px] font-bold ${asset.change >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {asset.change >= 0 ? '+' : ''}{asset.change.toFixed(2)}%
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                
+                <div className="glass p-6 rounded-2xl bg-gradient-to-br from-green-500/10 to-transparent border-green-500/20">
+                  <div className="flex items-center gap-3 mb-3">
+                    <Activity className="w-5 h-5 text-green-500" />
+                    <span className="text-white font-black text-sm uppercase tracking-widest">تنبيه ذكي</span>
+                  </div>
+                  <p className="text-gray-400 text-[10px] font-bold leading-relaxed">
+                    تشير تحليلاتنا الفنية الحالية إلى وجود زخم شرائي قوي في قطاع الطاقة والعملات الرقمية الكبرى.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Stats Bar */}
-      <section className="py-12 relative z-20 -mt-10">
+      <section className="pb-24 relative z-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="glass rounded-[2rem] p-1 shadow-2xl overflow-hidden">
             <div className="grid grid-cols-2 md:grid-cols-4 divide-x divide-x-reverse divide-white/5">

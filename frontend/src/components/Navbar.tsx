@@ -93,7 +93,7 @@ export default function Navbar() {
           isOpen ? 'translate-y-0 opacity-100' : '-translate-y-10 opacity-0 pointer-events-none'
         }`}
       >
-        <div className="glass rounded-3xl p-6 space-y-2 overflow-hidden" dir="rtl">
+        <div className="bg-slate-900/98 border border-white/10 backdrop-blur-2xl rounded-3xl p-6 shadow-2xl shadow-black/50 space-y-2 overflow-hidden" dir="rtl">
           {navLinks.map((link) => (
             <Link
               key={link.path}
@@ -101,7 +101,7 @@ export default function Navbar() {
               onClick={() => setIsOpen(false)}
               className={`block px-4 py-3 rounded-2xl text-base font-bold transition-all ${
                 location.pathname === link.path
-                  ? 'bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] shadow-lg shadow-green-500/20'
+                  ? 'bg-green-500 text-white shadow-lg shadow-green-500/20'
                   : 'text-gray-300 hover:bg-white/5 hover:text-white'
               }`}
             >
@@ -112,7 +112,7 @@ export default function Navbar() {
             <Link
               to="/client-login"
               onClick={() => setIsOpen(false)}
-              className="block w-full premium-btn premium-btn-primary text-center"
+              className="block w-full premium-btn premium-btn-primary text-center py-4"
             >
               دخول المستثمر
             </Link>
