@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   TrendingUp, Shield, Clock, Globe, Users, Zap, Star, 
@@ -23,6 +24,31 @@ const features = [
 ];
 
 export default function Home() {
+  const [markets, setMarkets] = useState([
+    { name: 'TADAWUL', symbol: 'SAU', price: 12450.2, change: 1.07, up: true },
+    { name: 'DFM', symbol: 'DXB', price: 4102.5, change: 0.85, up: true },
+    { name: 'ADX', symbol: 'AUH', price: 9234.8, change: -0.32, up: false },
+    { name: 'KSE', symbol: 'KWT', price: 7450.4, change: 1.23, up: true },
+  ]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMarkets(current => current.map(m => {
+        const volatility = 0.0005;
+        const movement = (Math.random() - 0.5) * 2 * volatility;
+        const newPrice = m.price * (1 + movement);
+        const newChange = m.change + (movement * 100);
+        return {
+          ...m,
+          price: newPrice,
+          change: newChange,
+          up: newChange >= 0
+        };
+      }));
+    }, 3000);
+    return () => clearInterval(interval);
+  }, []);
+
   return (
     <div className="min-h-screen selection:bg-green-500/30" dir="rtl">
       {/* Hero Section */}
@@ -78,19 +104,18 @@ export default function Home() {
 
             <div className="flex-1 w-full lg:max-w-xl animate-fade-in delay-300">
                {/* Market Live Grid */}
-               <div className="grid grid-cols-2 gap-4">
-                  {[
-                    { name: 'TADAWUL', symbol: 'SAU', price: '12,450.2', change: '+1.07%', up: true },
-                    { name: 'DFM', symbol: 'DXB', price: '4,102.5', change: '+0.85%', up: true },
-                    { name: 'ADX', symbol: 'AUH', price: '9,234.8', change: '-0.32%', up: false },
-                    { name: 'KSE', symbol: 'KWT', price: '7,450.4', change: '+1.23%', up: true },
-                  ].map((market, i) => (
+                <div className="grid grid-cols-2 gap-4">
+                  {markets.map((market, i) => (
                     <div key={i} className="glass p-5 rounded-3xl border-white/5 relative overflow-hidden group">
                        <div className="flex justify-between items-start mb-4">
                           <span className="text-white font-black text-sm">{market.name}</span>
-                          <span className={`text-[10px] font-bold ${market.up ? 'text-green-500' : 'text-red-500'}`}>{market.change}</span>
+                          <span className={`text-[10px] font-bold ${market.up ? 'text-green-500' : 'text-red-500'}`}>
+                            {market.change > 0 ? '+' : ''}{market.change.toFixed(2)}%
+                          </span>
                        </div>
-                       <div className="text-white text-xl font-black mb-1 tabular-nums">{market.price}</div>
+                       <div className="text-white text-xl font-black mb-1 tabular-nums">
+                        {market.price.toLocaleString(undefined, { minimumFractionDigits: 1, maximumFractionDigits: 1 })}
+                       </div>
                        <div className="text-gray-500 text-[10px] uppercase font-bold">{market.symbol} Market</div>
                        <div className={`absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r opacity-30 ${market.up ? 'from-green-500 to-transparent' : 'from-red-500 to-transparent'}`} />
                     </div>

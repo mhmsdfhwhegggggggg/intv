@@ -15,7 +15,7 @@ export default function ClientLogin() {
     setLoading(true);
     setError('');
     try {
-      const res = await clientLogin(accessCode, password);
+      const res = await clientLogin(accessCode.trim(), password.trim());
       localStorage.setItem('token', res.data.token);
       localStorage.setItem('role', 'client');
       localStorage.setItem('username', res.data.name);
