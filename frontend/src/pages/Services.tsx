@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { TrendingUp, Shield, BarChart3, Clock, Users, Zap, Target, ArrowUpRight, CheckCircle2, Layers, PieChart, BarChart, Smartphone, Headphones, Gem, Rocket } from 'lucide-react';
+import { TrendingUp, Shield, BarChart3, Users, Zap, CheckCircle2, PieChart, Smartphone, Headphones, Gem, Rocket } from 'lucide-react';
 
 const services = [
   {

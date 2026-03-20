@@ -1,4 +1,4 @@
-import { Shield, Target, Award, Users, TrendingUp, CheckCircle2, ArrowRight, Building2, Landmark, PieChart, BarChart3, Globe } from 'lucide-react';
+import { Shield, Award, TrendingUp, ArrowRight, Building2, Globe } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const reasons = [
